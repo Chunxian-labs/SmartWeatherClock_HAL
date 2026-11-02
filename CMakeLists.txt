@@ -50,6 +50,14 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     function_drivers/lcd/st7789.c
     function_drivers/lcd/st7789_com.c
+
+    thirdlib/fonts/font16_maple.c
+    thirdlib/fonts//font20_maple_bold.c
+    thirdlib/fonts//font24_maple_bold.c
+    thirdlib/fonts//font32_maple_bold.c
+    thirdlib/fonts//font54_maple_bold.c
+    thirdlib/fonts//font76_maple_extrabold.c
+
 )
 
 # Add include paths
@@ -57,6 +65,9 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     function_drivers/aht20
     function_drivers/lcd
+
+    thirdlib/fonts
+    thirdlib/images
 )
 
 # Add project symbols (macros)
