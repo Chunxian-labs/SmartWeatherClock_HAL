@@ -52,7 +52,7 @@ static uint8_t ST7789_GRAM_Set(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
         return 0;
     return 1;
 }
-uint8_t ST7789_Display_Init(void)
+static uint8_t ST7789_Display_Init(void)
 {
     ST7789_Reset();
     if(!ST7789_WriteRegister(0x11,NULL,0))
@@ -100,6 +100,32 @@ uint8_t ST7789_Display_Init(void)
     ST7789_BL_High();//打开背光
     return 1;
 }
+static const uint8_t *ASCII_Get_Model(const char ch, const font_t *font)
+{
+    if(!ch || !font->ascii_model) //参数检查，如果字符为0或者字体模型为空，则返回空指针
+    {
+        return NULL;
+    }
+    uint16_t bytes_per_row = (font->size/2+7)/8; //计算每行占用的字节数,向上取整
+    uint16_t bytes_per_char = bytes_per_row * font->size; //计算每个字符占用的总字节数
+
+    if(font->ascii_map != NULL)//如果存在自定义映射表
+    {
+        const char *map_pointer = font->ascii_map;//获取映射表指针,指向映射表首字符
+        while(*map_pointer != '\0')//遍历映射表，直到遇到结束符'\0'
+        {
+            if(*map_pointer == ch)//如果当前映射字符与目标字符匹配
+            {
+                uint16_t index = map_pointer - font->ascii_map; //计算索引位置
+                return font->ascii_model + index * bytes_per_char; //返回对应的字模数据指针
+            }
+            map_pointer++; //移动到下一个映射字符
+        }
+        return font->ascii_model; //如果没有找到匹配的字符，返回默认字模数据指针
+    }
+    return font -> ascii_model + (ch - font->first_char) * bytes_per_char; 
+    //如果没有自定义映射表，直接根据字符的ASCII值计算偏移量并返回字模数据指针
+}
 uint8_t ST7789_Init(void)
 {
     if(!st7789_dma_init())
@@ -117,6 +143,12 @@ uint8_t ST7789_FillColor(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint16_
     
     ST7789_CS_Low();//选中设备
     ST7789_DC_High();//发送数据
-    uint32_t total_pixels = (x2-x1+1)*(y2-y1+1);
+    uint32_t total_pixels = (x2-x1+1)*(y2-y1+1); //计算出数据总量
+    if(!st7789_dma_transmit(&color, total_pixels, 0)) //使用DMA传输数据
+    {
+        ST7789_CS_High();//如果发送失败，释放设备选线
+        return 0;
+    }
+    ST7789_CS_High();//如果发送成功，释放设备选线
     return 1;
 }
