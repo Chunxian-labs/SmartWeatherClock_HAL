@@ -58,6 +58,20 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     thirdlib/fonts//font54_maple_bold.c
     thirdlib/fonts//font76_maple_extrabold.c
 
+    thirdlib/images/welcome_page_pic.c
+    thirdlib/images/error_page_pic.c
+    thirdlib/images/wifi_page_pic.c
+    thirdlib/images/cloudy.c
+    thirdlib/images/snowy.c
+    thirdlib/images/rainy.c
+    thirdlib/images/overcast.c
+    thirdlib/images/rainstorm.c
+    thirdlib/images/windy.c
+    thirdlib/images/thermometer.c
+    thirdlib/images/moon.c
+    thirdlib/images/sunny.c
+    thirdlib/images/wifi_pic.c
+
 )
 
 # Add include paths
