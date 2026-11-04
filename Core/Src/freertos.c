@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "st7789.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -117,8 +118,8 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    ST7789_DrawString(0,0,"Hello World!",&font54_maple_bold,0xFFFF,0x0000);
-    osDelay(1);
+    printf("Hello World!\n");
+    osDelay(pdMS_TO_TICKS(1000));
   }
   /* USER CODE END StartDefaultTask */
 }

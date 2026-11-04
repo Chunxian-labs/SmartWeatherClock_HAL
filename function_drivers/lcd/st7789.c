@@ -266,7 +266,7 @@ uint8_t ST7789_DrawImage(uint16_t x, uint16_t y, const image_t *image)
         return 0; //如果设置GRAM区域失败，返回失败
     ST7789_CS_Low();//选中设备
     ST7789_DC_High();//发送数据
-    if(!st7789_dma_transmit((const uint16_t *)image->image_data, img_pixels, 0)) //使用DMA传输图像数据
+    if(!st7789_dma_transmit((const uint16_t *)image->image_data, img_pixels, 1)) //使用DMA传输图像数据
     {
         ST7789_CS_High();//如果发送失败，释放设备选线
         return 0;

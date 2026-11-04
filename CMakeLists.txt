@@ -34,6 +34,11 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+# Enable floating-point formatting in newlib-nano printf/snprintf.
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+    "LINKER:-u,_printf_float"
+)
+
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
@@ -45,11 +50,14 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    function_drivers/esp32at/usart_com.c
     function_drivers/aht20/aht20.c
     function_drivers/aht20/aht20_com.c
 
     function_drivers/lcd/st7789.c
     function_drivers/lcd/st7789_com.c
+
+    utilities/ring_buffer.c
 
     thirdlib/fonts/font16_maple.c
     thirdlib/fonts//font20_maple_bold.c
@@ -79,7 +87,9 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     function_drivers/aht20
     function_drivers/lcd
-
+    
+    utilities
+    
     thirdlib/fonts
     thirdlib/images
 )

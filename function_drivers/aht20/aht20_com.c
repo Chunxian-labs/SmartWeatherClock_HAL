@@ -10,7 +10,7 @@ uint8_t aht20_write_hal(uint8_t slave_address, uint8_t *data, uint8_t len)
                                 dev_addr,
                                 data,
                                 len,
-                                HAL_MAX_DELAY) != HAL_OK) 
+                                100) != HAL_OK)
                                 {
                                     return 0;
                                 }
@@ -26,7 +26,7 @@ uint8_t aht20_read_hal(uint8_t slave_address, uint8_t *data, uint8_t len)
                                 dev_addr,
                                 data,
                                 len,
-                                HAL_MAX_DELAY) != HAL_OK) 
+                                100) != HAL_OK)
                                 {
                                     return 0;
                                 }
