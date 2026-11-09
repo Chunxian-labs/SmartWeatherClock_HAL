@@ -9,7 +9,7 @@
 static uint8_t usart2_rx_byte;                   //接收暂存变量,接收中断每收到一个字节，写入该变量，该变量随中断更新
 static ring_buffer_t usart2_rx_rb;             //接收环形缓冲区,接收中断将接收暂存变量的字节写入该缓冲形缓冲区，该缓冲形缓冲区随中断更新
 volatile uint32_t usart2_rx_overflow_count = 0;  //丢包计数，用于debug
-uint8_t USART2_Ring_Buffer_Init(ring_buffer_t *rb)
+static uint8_t USART2_Ring_Buffer_Init(ring_buffer_t *rb)
 {
     if(rb == NULL)
     {
@@ -17,9 +17,15 @@ uint8_t USART2_Ring_Buffer_Init(ring_buffer_t *rb)
     }
     return Ring_Buffer_Init(rb);
 }
-void USART2_Start_Receive(void)   //上电/初始化时调用一次
+static void USART2_Start_Receive(void)   //上电/初始化时调用一次
 {
     HAL_UART_Receive_IT(&huart2, &usart2_rx_byte, 1);
+}
+//初始化环形缓冲区和接收中断
+void USART2_Initcom(void)
+{
+    USART2_Ring_Buffer_Init(&usart2_rx_rb);
+    USART2_Start_Receive();
 }
 bool USART2_Write_Byte(uint8_t data)
 {
@@ -40,7 +46,10 @@ uint8_t USART2_Read_Byte(uint8_t *data, uint32_t timeout)
     }
     return Ring_Buffer_Read(&usart2_rx_rb, data); //从接收环形缓冲区读取一个字节
 }
-
+void USART2_Clear_Receive_Buffer(void)
+{
+    Ring_Buffer_Clear(&usart2_rx_rb);
+}
 //接收中断服务函数
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
