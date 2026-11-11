@@ -36,19 +36,7 @@ typedef struct
     uint8_t second;
     uint8_t weekday;
 }ESP32_SNTP_Time_t;
-bool ESP32_AT_Init(void)
-{
-    if(!ESP_AT_Wait_Boot(3000)) 
-        return false; //如果没有在超时时间内返回OK，返回false,引导失败
-    if(!ESP_Send_CMD("AT",100)) //100ms
-        return false; //如果没有在超时时间内返回OK，返回false,通信建立失败
-    if(!ESP_Send_CMD("AT+RESTORE", 2000)) //2s
-        return false; //如果没有在超时时间内返回OK，返回false,复位失败
-    if(!ESP_Wait_Ready(5000))  //5s
-        return false; //如果没有在超时时间内返回OK，返回false,就绪失败
-
-    return true; //如果所有操作都成功，返回true,初始化成功
-}
+bool ESP32_AT_Init(void);
 
 /*WIFI 模块 */
 bool ESP32_AT_Wifi_Init(void);

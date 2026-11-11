@@ -50,7 +50,13 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    app/ui/ui.c
+    app/wifi/wifi.c
+    app/weather/weather.c
+
     function_drivers/esp32at/usart_com.c
+    function_drivers/esp32at/esp32_at.c
+
     function_drivers/aht20/aht20.c
     function_drivers/aht20/aht20_com.c
 
@@ -85,6 +91,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    app/ui
+    app/wifi
+    app/weather
+
+    function_drivers/esp32at
     function_drivers/aht20
     function_drivers/lcd
     

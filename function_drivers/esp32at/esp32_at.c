@@ -1,5 +1,4 @@
 #include "esp32_at.h"
-#include "portmacro.h"
 #include "usart_com.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -213,7 +212,7 @@ bool ESP_WIFI_GetInfo(ESP32_WIFI_Info_t *wifi_info)
         return false; //如果没有在超时时间内返回OK，返回false,获取失败
     if(!Parse_CWSTATE_Responce(ESP_GetResponseBuffer(), wifi_info))
     {
-        parse_fail_count++
+        parse_fail_count++;
         return false; //如果没有解析成功，返回false,解析失败
     }
     if(wifi_info->isConnected == true)

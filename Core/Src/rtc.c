@@ -21,7 +21,7 @@
 #include "rtc.h"
 
 /* USER CODE BEGIN 0 */
-
+#include <string.h>
 /* USER CODE END 0 */
 
 RTC_HandleTypeDef hrtc;
@@ -129,6 +129,85 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/* 将结构体中的时间和日期直接写入 RTC */
+HAL_StatusTypeDef RTC_Set_Time(const RTC_Time_t *time)
+{
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+  if(time == NULL)
+  {
+    return HAL_ERROR;
+  }
+  if (time->year < 2000 || time->year > 2099) 
+    return HAL_ERROR;
+  if (time->month < 1 || time->month > 12)    
+    return HAL_ERROR;
+  if (time->day < 1 || time->day > 31)        
+    return HAL_ERROR;
+  if (time->hour > 23 || time->minute > 59 || time->second > 59) 
+    return HAL_ERROR;
+  if (time->weekday < 1 || time->weekday > 7) 
+    return HAL_ERROR;
+  
+  sTime.Hours = time->hour;
+  sTime.Minutes = time->minute;
+  sTime.Seconds = time->second;
+  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
 
+  sDate.Year = (uint8_t)(time->year - 2000);
+  sDate.Month = (uint8_t)time->month;
+  sDate.Date = (uint8_t)time->day;
+  sDate.WeekDay = (uint8_t)time->weekday;
+  if(HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    return HAL_ERROR;
+  }
+  if(HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    return HAL_ERROR;
+  }
+  return HAL_OK;
+}
+/* 从 RTC 读取时间和日期，填写到结构体 */
+static HAL_StatusTypeDef RTC_Get_Time_Once(RTC_Time_t *time)
+{
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+
+  if (HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) 
+    return HAL_ERROR;
+  if (HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK) 
+    return HAL_ERROR;
+
+  time->year    = (uint16_t)(2000 + sDate.Year);
+  time->month   = (uint8_t)sDate.Month;
+  time->day     = (uint8_t)sDate.Date;
+  time->weekday = (uint8_t)sDate.WeekDay;
+  time->hour    = (uint8_t)sTime.Hours;
+  time->minute  = (uint8_t)sTime.Minutes;
+  time->second  = (uint8_t)sTime.Seconds;
+  return HAL_OK;
+}
+
+HAL_StatusTypeDef RTC_Get_Time(RTC_Time_t *time)
+{
+  RTC_Time_t t1, t2;
+  uint32_t retry = 0;
+
+  if (time == NULL) return HAL_ERROR;
+
+  do {
+    if (RTC_Get_Time_Once(&t1) != HAL_OK) 
+      return HAL_ERROR;
+    if (RTC_Get_Time_Once(&t2) != HAL_OK) 
+      return HAL_ERROR;
+    if (++retry > 5U) 
+      return HAL_TIMEOUT;
+  } while (memcmp(&t1, &t2, sizeof(RTC_Time_t)) != 0);
+
+  *time = t1;
+  return HAL_OK;
+}
 /* USER CODE END 1 */
 
